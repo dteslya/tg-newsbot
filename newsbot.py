@@ -5,10 +5,16 @@ from glom import glom
 import datetime
 import telebot
 import logging
+import os
 
-bot = telebot.TeleBot("1357156471:AAHwAQe3FCxANbdtLdyPZwqoTuQmDDDsBrQ")
+# Get env config vars
+TG_TOKEN = os.getenv("TG_TOKEN")
+NEWSAPI_TOKEN = os.getenv("NEWSAPI_TOKEN")
 
-# Logging
+# Init bot
+bot = telebot.TeleBot(TG_TOKEN)
+
+# Set logging
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)  # Outputs debug messages to console.
 
@@ -29,22 +35,26 @@ def send_text(message):
         response_message = response_message + (
             f"🔹 [{date_f}] {item['source']['name']} [{item['title']}]({item['url']})\n\n"
         )
-    bot.send_message(message.chat.id, response_message, parse_mode="Markdown", disable_web_page_preview=True)
+    bot.send_message(
+        message.chat.id,
+        response_message,
+        parse_mode="Markdown",
+        disable_web_page_preview=True,
+    )
 
 
 def news():
-    """Get news from specified sources for the last 7 days"""
+    """Get popular news from specified sources for the last 7 days"""
     today = datetime.date.today()
     week_ago = today - datetime.timedelta(days=7)
 
     url = "http://newsapi.org/v2/everything?"
     parameters = {
         "pageSize": 10,  # maximum is 100
-        "apiKey": "ccdb606181bd4e178269567a0711ff00",  # your own API key
+        "apiKey": NEWSAPI_TOKEN,  # your own API key
         "from": today.strftime("%Y-%m-%d"),
         "to": week_ago.strftime("%Y-%m-%d"),
         "domains": ["www.rbc.ru", "meduza.io", "bbc.com"],
-        # "domains": ["meduza.io", "bbc.com"],
         "language": "ru",
         "sortBy": "popularity",
     }
