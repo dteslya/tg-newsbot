@@ -1,0 +1,17 @@
+version: '3.6'
+
+services:
+
+  newsbot:
+    image: newsbot:0.1.0
+    build:
+        dockerfile: Dockerfile
+        context: .
+    container_name: newsbot
+    restart: unless-stopped
+    environment:
+        - TG_TOKEN=${TG_TOKEN}
+        - NEWSAPI_TOKEN=${NEWSAPI_TOKEN}
+    volumes:
+        - ./newsbot.py:/home/bot/newsbot.py
+    
